@@ -1,6 +1,6 @@
 #gamefunctions.py
 #Maddie Huettner
-#09/26/24
+#10/10/24
 
 #This project examines functions in an adventerous way.
 #Below it calls two main functions three separate time with dif inputs.
