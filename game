@@ -1,0 +1,42 @@
+#game.py
+#Maddie Huettner
+#10/17/24
+
+#Below is a module docstring that provides an overview of this module.
+"""
+This is a second file that corresponds to gamefunctions, the adventure game.
+
+It imports functions from the gamefunctions module to interact with
+the user and simulate game mechanics. It includes one function docstring.
+
+Functions:
+main():
+"""
+
+from gamefunctions import print_welcome, print_shop_menu, purchase_item, new_random_monster
+
+#Below is the code for the function docstring main().
+def main():
+    name = input("Enter your name: ")
+    print_welcome(name)
+
+    print("\nWelcome to the Shop!")
+    print_shop_menu("Sword", 50, "Shield", 30)
+
+    item_price = float(input("\nEnter the price of the item you want to buy: "))
+    money = float(input("Enter the amount of money you have: "))
+    quantity = int(input("Enter the quantity you want to purchase: "))
+    
+    num_purchased, leftover_money = purchase_item(item_price, money, quantity)
+    print(f"You purchased {num_purchased} items. Remaining money: ${leftover_money:.2f}")
+
+    print("\nLet's encounter a random monster!")
+    monster = new_random_monster()
+    print(f"A wild {monster['Name']} appeared!\n"
+          f"Description: {monster['Description']}\n"
+          f"Health: {monster['Health']}\n"
+          f"Power: {monster['Power']}\n"
+          f"Money: {monster['Money']}")
+
+if __name__ == "__main__":
+    main()
