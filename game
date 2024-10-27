@@ -1,6 +1,6 @@
 #game.py
 #Maddie Huettner
-#10/17/24
+#10/27/24
 
 #Below is a module docstring that provides an overview of this module.
 """
@@ -18,7 +18,7 @@ import random
 
 #Below is the code for the function display_menu.
 #This will display the current status and menu options.
-def display_menu((current_hp: int, current_gold: int):
+def display_menu(current_hp: int, current_gold: int):
     print(f"\nCurrent HP: {current_hp}, Current Gold: {current_gold}")
     print("What would you like to do?")
     print("1) Fight Monster")
@@ -38,6 +38,10 @@ def get_user_choice() -> int:
         except ValueError:
             print("Invalid input. Please enter a number.")
 
+
+
+
+
 #Below is the code for the function fight_monster.
 #The user is then given a menu where they can either choose to continue fighting or run away.
 def fight_monster(user_hp: int, user_power: int) -> int:
@@ -54,27 +58,37 @@ def fight_monster(user_hp: int, user_power: int) -> int:
     monster_hp = monster["Health"]
     print(f"A wild {monster['Name']} appears!")
 
- while user_hp > 0 and monster_hp > 0:
-        #User attacks the monster
-        user_damage = user_power + random.randint(0, 5)
-        monster_hp -= user_damage
-        print(f"You deal {user_damage} damage to the {monster['Name']}!")
+    while user_hp > 0 and monster_hp > 0:
+            #User attacks the monster
+            user_damage = user_power + random.randint(0, 5)
+            monster_hp -= user_damage
+            print(f"You deal {user_damage} damage to the {monster['Name']}!")
 
-        if monster_hp <= 0:
-            print(f"You defeated the {monster['Name']}!")
-            return user_hp
+            if monster_hp <= 0:
+                print(f"You defeated the {monster['Name']}!")
+                return user_hp
 
-        # Monster attacks the user
-        monster_damage = random.randint(1, monster["Power"])  # Monster damage
-        user_hp -= monster_damage
-        print(f"The {monster['Name']} deals {monster_damage} damage to you!")
+            # Monster attacks the user
+            monster_damage = random.randint(1, monster["Power"])  # Monster damage
+            user_hp -= monster_damage
+            print(f"The {monster['Name']} deals {monster_damage} damage to you!")
 
-        if user_hp <= 0:
-            print("You have been defeated!")
-            return 0
+            if user_hp <= 0:
+                print("You have been defeated!")
+                return 0
 
 
 
+
+def sleep(hp, gold):
+    """Restore HP for 5 gold."""
+    if gold >= 5:
+        hp = min(100, hp + 20)
+        gold -= 5
+        print("You slept and restored 20 HP.")
+    else:
+        print("Not enough gold to sleep.")
+    return hp, gold
 
 
 
@@ -105,3 +119,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
