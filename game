@@ -69,7 +69,7 @@ def fight_monster(user_hp: int, user_power: int) -> int:
                 return user_hp
 
             # Monster attacks the user
-            monster_damage = random.randint(1, monster["Power"])  # Monster damage
+            monster_damage = random.randint(1, monster["Power"]) 
             user_hp -= monster_damage
             print(f"The {monster['Name']} deals {monster_damage} damage to you!")
 
@@ -80,15 +80,14 @@ def fight_monster(user_hp: int, user_power: int) -> int:
 
 
 
-def sleep(hp, gold):
-    """Restore HP for 5 gold."""
+def sleep(user_hp: int, gold: int) -> (int, int):
     if gold >= 5:
-        hp = min(100, hp + 20)
+        user_hp = min(100, user_hp + 20)
         gold -= 5
         print("You slept and restored 20 HP.")
     else:
         print("Not enough gold to sleep.")
-    return hp, gold
+    return user_hp, gold
 
 
 
@@ -99,23 +98,24 @@ def main():
     name = input("Enter your name: ")
     print_welcome(name)
 
-    print("\nWelcome to the Shop!")
-    print_shop_menu("Sword", 50, "Shield", 30)
+    user_hp = 100
+    user_gold = 50  # Starting gold
+    user_power = 10  # Starting power
 
-    item_price = float(input("\nEnter the price of the item you want to buy: "))
-    money = float(input("Enter the amount of money you have: "))
-    quantity = int(input("Enter the quantity you want to purchase: "))
-    
-    num_purchased, leftover_money = purchase_item(item_price, money, quantity)
-    print(f"You purchased {num_purchased} items. Remaining money: ${leftover_money:.2f}")
+    while True:
+        display_menu(user_hp, user_gold)
+        choice = get_user_choice()
 
-    print("\nLet's encounter a random monster!")
-    monster = new_random_monster()
-    print(f"A wild {monster['Name']} appeared!\n"
-          f"Description: {monster['Description']}\n"
-          f"Health: {monster['Health']}\n"
-          f"Power: {monster['Power']}\n"
-          f"Money: {monster['Money']}")
+        if choice == 1:  # Fight Monster
+            user_hp = fight_monster(user_hp, user_power)
+            if user_hp <= 0:
+                print("Game Over!")
+                break
+        elif choice == 2:  # Sleep
+            user_hp, user_gold = sleep(user_hp, user_gold)
+        elif choice == 3:  # Quit
+            print("Thanks for playing!")
+            break
 
 if __name__ == "__main__":
     main()
