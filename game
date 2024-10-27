@@ -14,6 +14,71 @@ main():
 """
 
 from gamefunctions import print_welcome, print_shop_menu, purchase_item, new_random_monster
+import random
+
+#Below is the code for the function display_menu.
+#This will display the current status and menu options.
+def display_menu((current_hp: int, current_gold: int):
+    print(f"\nCurrent HP: {current_hp}, Current Gold: {current_gold}")
+    print("What would you like to do?")
+    print("1) Fight Monster")
+    print("2) Sleep (Restore HP for 5 Gold)")
+    print("3) Quit")
+
+#Below is the code for the function get_user_choice.
+#This will validate the user input from display_menu.
+def get_user_choice() -> int:
+    while True:
+        try:
+            choice = int(input("Enter your choice: "))
+            if choice in [1, 2, 3]:
+                return choice
+            else:
+                print("Invalid choice. Please enter a number between 1 and 3.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+#Below is the code for the function fight_monster.
+#The user is then given a menu where they can either choose to continue fighting or run away.
+def fight_monster(user_hp: int, user_power: int) -> int:
+    """Handles the combat mechanics between the user and a random monster.
+
+    Parameters:
+        user_hp (int): The user's current health points.
+        user_power (int): The user's attack power.
+
+    Returns:
+        int: The user's remaining health points after the fight.
+    """
+    monster = new_random_monster()
+    monster_hp = monster["Health"]
+    print(f"A wild {monster['Name']} appears!")
+
+ while user_hp > 0 and monster_hp > 0:
+        #User attacks the monster
+        user_damage = user_power + random.randint(0, 5)
+        monster_hp -= user_damage
+        print(f"You deal {user_damage} damage to the {monster['Name']}!")
+
+        if monster_hp <= 0:
+            print(f"You defeated the {monster['Name']}!")
+            return user_hp
+
+        # Monster attacks the user
+        monster_damage = random.randint(1, monster["Power"])  # Monster damage
+        user_hp -= monster_damage
+        print(f"The {monster['Name']} deals {monster_damage} damage to you!")
+
+        if user_hp <= 0:
+            print("You have been defeated!")
+            return 0
+
+
+
+
+
+
+
 
 #Below is the code for the function docstring main().
 def main():
