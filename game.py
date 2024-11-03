@@ -84,23 +84,25 @@ def fight_monster(user_hp: int, user_power: int) -> int:
     print(f"A wild {monster['Name']} appears!")
 
     while user_hp > 0 and monster_hp > 0:
-            #User attacks the monster
+        print(f"\nYour HP: {user_hp}, {monster['Name']} HP: {monster_hp}")
+        action = input("What do you want to do? (fight/run): ").strip().lower()
+        
+        if action == 'fight':
             user_damage = user_power + random.randint(0, 5)
             monster_hp -= user_damage
             print(f"You deal {user_damage} damage to the {monster['Name']}!")
+            if monster_hp <= 0: return user_hp
 
-            if monster_hp <= 0:
-                print(f"You defeated the {monster['Name']}!")
-                return user_hp
-
-            # Monster attacks the user
-            monster_damage = random.randint(1, monster["Power"]) 
+            monster_damage = random.randint(1, monster["Power"])
             user_hp -= monster_damage
             print(f"The {monster['Name']} deals {monster_damage} damage to you!")
+            if user_hp <= 0: return 0
+        
+        elif action == 'run':
+            print("You chose to run away!")
+            return user_hp
+    return user_hp
 
-            if user_hp <= 0:
-                print("You have been defeated!")
-                return 0
 
 
 
