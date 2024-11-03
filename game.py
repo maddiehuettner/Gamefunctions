@@ -15,8 +15,9 @@ main():
 from gamefunctions import print_welcome, print_shop_menu, purchase_item, new_random_monster
 import random
 
-# Initialize inventory
 inventory = []
+
+
 
 # Below is the code for the function docstring display_menu.
 def display_menu(current_hp: int, current_gold: int):
@@ -63,12 +64,13 @@ def get_user_choice() -> int:
 
 
 # Below is the code for the function docstring fight_monster.
-def fight_monster(user_hp: int, user_power: int) -> int:
+def fight_monster(user_hp: int, user_power: int, equipped_weapon: dict = None) -> int:
     """Handles the combat mechanics between the user and a random monster.
 
     Parameters:
         user_hp (int): The user's current health points.
         user_power (int): The user's attack power.
+        equipped_weapon (dict or None): The equipped weapon item.
 
     Returns:
         int: The user's remaining health points after the fight.
@@ -83,7 +85,8 @@ def fight_monster(user_hp: int, user_power: int) -> int:
         action = input("What do you want to do? (fight/run/use transporter): ").strip().lower()
         
         if action == 'fight':
-            user_damage = user_power + random.randint(0, 5)
+            weapon_power = equipped_weapon["maxDurability"] if equipped_weapon else 0
+            user_damage = user_power + weapon_power + random.randint(0, 5)
             monster_hp -= user_damage
             print(f"You deal {user_damage} damage to the {monster['Name']}!")
             if monster_hp <= 0: return user_hp
@@ -179,11 +182,17 @@ def equip_item():
         print("Choose a weapon to equip:")
         for idx, item in enumerate(weapons):
             print(f"{idx + 1}) {item['name']} (Durability: {item['currentDurability']})")
-        choice = int(input("Select the number of the item to equip: ")) - 1
-        if 0 <= choice < len(weapons):
-            equipped_item = weapons[choice]
-            print(f"You have equipped the {equipped_item['name']}.")
-            return equipped_item
+        while True:
+            try:
+                choice = int(input("Select the number of the item to equip: ")) - 1
+                if 0 <= choice < len(weapons):
+                    equipped_item = weapons[choice]
+                    print(f"You have equipped the {equipped_item['name']}.")
+                    return equipped_item
+                else:
+                    print("Invalid choice. Please select a valid weapon number.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
     print("No weapons available to equip.")
     return None
 
@@ -195,15 +204,16 @@ def main():
     print_welcome(name)
 
     user_hp = 100
-    user_gold = 50  # Starting gold
-    user_power = 10  # Starting power
+    user_gold = 50  
+    user_power = 10  
+    equipped_weapon = None  
 
     while True:
         display_menu(user_hp, user_gold)
         choice = get_user_choice()
 
         if choice == 1:  # Fight Monster
-            user_hp = fight_monster(user_hp, user_power)
+            user_hp = fight_monster(user_hp, user_power, equipped_weapon)
             if user_hp <= 0:
                 print("Game Over!")
                 break
@@ -212,10 +222,11 @@ def main():
         elif choice == 3:  # Shop
             user_gold = shop(user_gold)
         elif choice == 4:  # Equip Item
-            equip_item()
+            equipped_weapon = equip_item()
         elif choice == 5:  # Quit
             print("Thanks for playing!")
             break
 
 if __name__ == "__main__":
     main()
+
