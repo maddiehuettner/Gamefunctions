@@ -1,8 +1,7 @@
-#game.py
-#Maddie Huettner
-#11/03/24
+# game.py
+# Maddie Huettner
+# 11/03/24
 
-#Below is a module docstring that provides an overview of this module.
 """
 This is a second file that corresponds to gamefunctions, the adventure game.
 
@@ -16,11 +15,10 @@ main():
 from gamefunctions import print_welcome, print_shop_menu, purchase_item, new_random_monster
 import random
 
+# Initialize inventory
+inventory = []
 
-
-
-
-#Below is the code for the function docstring display_menu.
+# Below is the code for the function docstring display_menu.
 def display_menu(current_hp: int, current_gold: int):
     """Displays the current status and menu options.
     
@@ -35,39 +33,36 @@ def display_menu(current_hp: int, current_gold: int):
     print("What would you like to do?")
     print("1) Fight Monster")
     print("2) Sleep (Restore HP for 5 Gold)")
-    print("3) Quit")
+    print("3) Shop (Purchase Items)")
+    print("4) Equip Item")
+    print("5) Quit")
 
 
 
-
-
-
-#Below is the code for the function docstring get_user_choice.
+# Below is the code for the function docstring get_user_choice.
 def get_user_choice() -> int:
     """Validates and retrieves the user's choice from the menu.
-    
-    This function prompts the user to enter their choice and validates
-    the input to ensure it is a valid option (1, 2, or 3). If the input
-    is invalid, the user is prompted again until a valid choice is made.
 
+    This function prompts the user to enter their choice and validates
+    the input to ensure it is a valid option (1-5). If the input
+    is invalid, the user is prompted again until a valid choice is made.
+    
     Returns:
-        int: The validated choice made by the user (1, 2, or 3).
+        int: The validated choice made by the user (1, 2, 3, 4, or 5).
     """
     while True:
         try:
             choice = int(input("Enter your choice: "))
-            if choice in [1, 2, 3]:
+            if choice in [1, 2, 3, 4, 5]:
                 return choice
             else:
-                print("Invalid choice. Please enter a number between 1 and 3.")
+                print("Invalid choice. Please enter a number between 1 and 5.")
         except ValueError:
             print("Invalid input. Please enter a number.")
 
 
 
-
-
-#Below is the code for the function docstring fight_monster.
+# Below is the code for the function docstring fight_monster.
 def fight_monster(user_hp: int, user_power: int) -> int:
     """Handles the combat mechanics between the user and a random monster.
 
@@ -85,7 +80,7 @@ def fight_monster(user_hp: int, user_power: int) -> int:
 
     while user_hp > 0 and monster_hp > 0:
         print(f"\nYour HP: {user_hp}, {monster['Name']} HP: {monster_hp}")
-        action = input("What do you want to do? (fight/run): ").strip().lower()
+        action = input("What do you want to do? (fight/run/use transporter): ").strip().lower()
         
         if action == 'fight':
             user_damage = user_power + random.randint(0, 5)
@@ -101,13 +96,21 @@ def fight_monster(user_hp: int, user_power: int) -> int:
         elif action == 'run':
             print("You chose to run away!")
             return user_hp
+        
+        elif action == 'use transporter':
+            transporter = next((item for item in inventory if item["name"].lower() == "special transporter"), None)
+            if transporter:
+                print("You used the Special Transporter! The monster has been sent away.")
+                inventory.remove(transporter)
+                return user_hp
+            else:
+                print("You don't have a Special Transporter to use!")
+
     return user_hp
 
 
 
-
-
-#Below is the code for the function docstring sleep.
+# Below is the code for the function docstring sleep.
 def sleep(user_hp: int, gold: int) -> tuple:
     """Restores health points for a cost of gold.
 
@@ -116,7 +119,7 @@ def sleep(user_hp: int, gold: int) -> tuple:
         gold (int): The user's current amount of gold.
 
     Returns:
-        tuple: A tuple containing the updated user health points and remaining gold.
+        tuple: Updated user health points and remaining gold.
     """
     if gold >= 5:
         user_hp = min(100, user_hp + 20)
@@ -128,9 +131,65 @@ def sleep(user_hp: int, gold: int) -> tuple:
 
 
 
+# Below is the code for the function docstring shop.
+def shop(user_gold: int):
+    """Displays shop items and allows the user to purchase them.
+
+    Parameters:
+        user_gold (int): The user's current amount of gold.
+
+    Returns:
+        int: The updated amount of gold after purchases.
+    """
+    items = [
+        {"name": "Sword", "type": "weapon", "maxDurability": 10, "currentDurability": 10, "cost": 15},
+        {"name": "Special Transporter", "type": "misc", "cost": 30, "note": "Sends monsters away."}
+    ]
+    print_shop_menu(items)
+    choice = input("Which item would you like to purchase? (Enter name): ").strip()
+    for item in items:
+        if item["name"].lower() == choice.lower() and user_gold >= item["cost"]:
+            inventory.append(item)
+            user_gold -= item["cost"]
+            print(f"You purchased a {item['name']}!")
+            return user_gold
+    print("Invalid choice or not enough gold.")
+    return user_gold
 
 
-#Below is the code for the function docstring main().
+
+# Below is the code for the function docstring equip_item.
+def equip_item():
+    """Allows the user to equip a relevant item from their inventory.
+
+    This function displays the available weapons in the user's inventory,
+    prompts the user to select one to equip, and indicates whether the 
+    item has been successfully equipped. If no weapons are available, 
+    the user is informed.
+
+    Parameters:
+        None
+
+    Returns:
+        dict or None: The equipped item as a dictionary if successful, 
+                      or None if no weapons are available to equip.
+    """
+    weapons = [item for item in inventory if item["type"] == "weapon"]
+    if weapons:
+        print("Choose a weapon to equip:")
+        for idx, item in enumerate(weapons):
+            print(f"{idx + 1}) {item['name']} (Durability: {item['currentDurability']})")
+        choice = int(input("Select the number of the item to equip: ")) - 1
+        if 0 <= choice < len(weapons):
+            equipped_item = weapons[choice]
+            print(f"You have equipped the {equipped_item['name']}.")
+            return equipped_item
+    print("No weapons available to equip.")
+    return None
+
+
+
+# Below is the code for the function docstring main().
 def main():
     name = input("Enter your name: ")
     print_welcome(name)
@@ -150,7 +209,11 @@ def main():
                 break
         elif choice == 2:  # Sleep
             user_hp, user_gold = sleep(user_hp, user_gold)
-        elif choice == 3:  # Quit
+        elif choice == 3:  # Shop
+            user_gold = shop(user_gold)
+        elif choice == 4:  # Equip Item
+            equip_item()
+        elif choice == 5:  # Quit
             print("Thanks for playing!")
             break
 
