@@ -1,6 +1,6 @@
 # game.py
 # Maddie Huettner
-# 11/03/24
+# 11/10/24
 
 """
 This is a second file that corresponds to gamefunctions, the adventure game.
