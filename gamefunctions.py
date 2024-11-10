@@ -17,6 +17,7 @@ Calculates purchases & remaining money.
 4. new_random_monster() -> dict: Generates random monsters & various attributes.
 """
 
+import json
 import random
 
 # Below is the code for the function docstring print_welcome.
@@ -166,3 +167,34 @@ def test_functions():
 # Demonstration of functions from above.
 if __name__ == "__main__":
     test_functions()
+
+# New function to save the game state
+def save_game(user_hp: int, user_gold: int, inventory: list, filename: str = "save_game.json") -> None:
+    """Saves the current game state to a JSON file."""
+    game_state = {
+        "user_hp": user_hp,
+        "user_gold": user_gold,
+        "inventory": inventory
+    }
+    try:
+        with open(filename, "w") as file:
+            json.dump(game_state, file, indent=4)
+        print(f"Game saved successfully to {filename}.")
+    except Exception as e:
+        print(f"Error saving the game: {e}")
+
+
+# New function to load the game state from a JSON file
+def load_game(filename: str = "save_game.json") -> dict:
+    """Loads the game state from a JSON file."""
+    try:
+        with open(filename, "r") as file:
+            game_state = json.load(file)
+        print(f"Game loaded successfully from {filename}.")
+        return game_state
+    except FileNotFoundError:
+        print("No saved game found. Starting a new game.")
+        return None
+    except Exception as e:
+        print(f"Error loading the game: {e}")
+        return None
