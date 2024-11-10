@@ -37,7 +37,7 @@ def display_menu(current_hp: int, current_gold: int):
     print("3) Shop (Purchase Items)")
     print("4) Equip Item")
     print("5) Quit")
-
+    print("6) Quit without Saving")
 
 
 # Below is the code for the function docstring get_user_choice.
@@ -60,6 +60,57 @@ def get_user_choice() -> int:
                 print("Invalid choice. Please enter a number between 1 and 5.")
         except ValueError:
             print("Invalid input. Please enter a number.")
+
+
+
+# Main function with game loop
+def main():
+    print("Welcome to the Adventure Game!")
+    
+    # Prompt to load or start new game
+    choice = input("Do you want to (1) Start a new game or (2) Load a saved game? (Enter 1 or 2): ").strip()
+    if choice == "2":
+        game_data = load_game()  # Load the saved game if available
+        if game_data:
+            user_hp = game_data["user_hp"]
+            user_gold = game_data["user_gold"]
+            inventory = game_data["inventory"]
+        else:
+            # If no saved game, start a new game
+            user_hp = 100
+            user_gold = 50
+            inventory = []
+    else:
+        # New game setup
+        user_hp = 100
+        user_gold = 50
+        inventory = []
+
+    user_power = 10
+    equipped_weapon = None
+
+    while True:
+        display_menu(user_hp, user_gold)
+        choice = get_user_choice()
+
+        if choice == 1:  # Fight Monster
+            user_hp = fight_monster(user_hp, user_power, equipped_weapon)
+            if user_hp <= 0:
+                print("Game Over!")
+                break
+        elif choice == 2:  # Sleep
+            user_hp, user_gold = sleep(user_hp, user_gold)
+        elif choice == 3:  # Shop
+            user_gold = shop(user_gold)
+        elif choice == 4:  # Equip Item
+            equipped_weapon = equip_item()
+        elif choice == 5:  # Save and Quit
+            save_game(user_hp, user_gold, inventory)  # Save the game
+            print("Game saved! Thanks for playing!")
+            break
+        elif choice == 6:  # Quit without Saving
+            print("Thanks for playing!")
+            break
 
 
 
@@ -195,38 +246,4 @@ def equip_item():
                 print("Invalid input. Please enter a number.")
     print("No weapons available to equip.")
     return None
-
-
-
-# Below is the code for the function docstring main().
-def main():
-    name = input("Enter your name: ")
-    print_welcome(name)
-
-    user_hp = 100
-    user_gold = 50  
-    user_power = 10  
-    equipped_weapon = None  
-
-    while True:
-        display_menu(user_hp, user_gold)
-        choice = get_user_choice()
-
-        if choice == 1:  # Fight Monster
-            user_hp = fight_monster(user_hp, user_power, equipped_weapon)
-            if user_hp <= 0:
-                print("Game Over!")
-                break
-        elif choice == 2:  # Sleep
-            user_hp, user_gold = sleep(user_hp, user_gold)
-        elif choice == 3:  # Shop
-            user_gold = shop(user_gold)
-        elif choice == 4:  # Equip Item
-            equipped_weapon = equip_item()
-        elif choice == 5:  # Quit
-            print("Thanks for playing!")
-            break
-
-if __name__ == "__main__":
-    main()
 
