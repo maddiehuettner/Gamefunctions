@@ -1,4 +1,4 @@
-import sys; sys.executable
+import sys
 import pygame
 import random
 from gamefunctions import print_shop_menu, purchase_item, new_random_monster
@@ -12,8 +12,6 @@ GRID_SIZE = 10
 SQUARE_SIZE = 32
 FPS = 30
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 
 # Title and screen display instructions.
@@ -24,20 +22,16 @@ pygame.display.set_caption("Interactive Game")
 player_x, player_y = 0, 0
 player_rect = pygame.Rect(player_x * SQUARE_SIZE, player_y * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
 
-# Shop and encounter locations.
-shop_location = (5, 5)  
-encounter_location = (7, 7) 
-
 # Inventory and money.
 user_gold = 50
 
-# Font for displaying text.
+# Font instructions.
 font = pygame.font.SysFont('Arial', 16)
 
 
+shop_visited = False
 
-
-# Below is the code for the function docstring draw_grid.
+# Below is the code for function doctsring draw_grid.
 def draw_grid():
     """
     Draws a grid of squares on the screen.
@@ -52,8 +46,7 @@ def draw_grid():
         for y in range(0, HEIGHT, SQUARE_SIZE):
             pygame.draw.rect(screen, WHITE, pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
 
-
-# Below is the code for the function docstring display_message:
+# Below is the code for function doctsring display_message.
 def display_message(text):
     """
     Displays a text message on the screen.
@@ -68,7 +61,7 @@ def display_message(text):
     screen.blit(text_surface, (10, HEIGHT - 30))
 
 
-# Below is the code for the function docstring game_loop.
+# Below is the code for function doctsring game_loop.
 def game_loop():
     """
     Loop that controls the game.
@@ -79,7 +72,7 @@ def game_loop():
     Returns:
         None
     """
-    global player_x, player_y, player_rect, user_gold
+    global player_x, player_y, player_rect, user_gold, shop_visited
     clock = pygame.time.Clock()
     
     running = True
@@ -87,13 +80,7 @@ def game_loop():
         screen.fill((0, 0, 0))
         draw_grid()
 
-
         pygame.draw.rect(screen, (0, 0, 255), player_rect)
-
-
-        pygame.draw.circle(screen, GREEN, (shop_location[0] * SQUARE_SIZE + 16, shop_location[1] * SQUARE_SIZE + 16), 10)
-        pygame.draw.circle(screen, RED, (encounter_location[0] * SQUARE_SIZE + 16, encounter_location[1] * SQUARE_SIZE + 16), 10)
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -114,32 +101,13 @@ def game_loop():
                 elif event.key == pygame.K_q:
                     running = False  
 
-        # Updates player position.
+
         player_rect.topleft = (player_x * SQUARE_SIZE, player_y * SQUARE_SIZE)
-
-        # Interaction with shop.
-        if (player_x, player_y) == shop_location:
-            display_message("You've reached the shop!")
-
-            items = [
-                {"name": "Sword", "cost": 15},
-                {"name": "Special Transporter", "cost": 30}
-            ]
-            print_shop_menu(items)
-            user_gold = shop(user_gold)
-            display_message(f"Gold: {user_gold}")
-
-
-        if (player_x, player_y) == encounter_location:
-            display_message("A wild monster appears!")
-            monster = new_random_monster()
-            display_message(f"Name: {monster['Name']}\nHealth: {monster['Health']}")
 
         pygame.display.update() 
         clock.tick(FPS)
 
     pygame.quit()
-
 
 
 if __name__ == "__main__":
