@@ -247,3 +247,5 @@ def equip_item():
     print("No weapons available to equip.")
     return None
 
+if __name__ == "__main__":
+    main()
