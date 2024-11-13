@@ -14,8 +14,60 @@ main():
 
 from gamefunctions import print_welcome, print_shop_menu, purchase_item, new_random_monster
 import random
+import sys; sys.executable
+import json
 
 inventory = []
+
+
+# Below is the code for the function docstring save_game:
+def save_game(user_hp: int, user_gold: int, inventory: list):
+    """Saves the current game state to a file.
+
+    Parameters:
+        user_hp (int): The current health points of the player.
+        user_gold (int): The current amount of gold the player has.
+        inventory (list): A list of items in the player's inventory.
+
+    Returns:
+        None
+    
+    """
+    game_data = {
+        "user_hp": user_hp,
+        "user_gold": user_gold,
+        "inventory": inventory
+    }
+    try:
+        with open("save.json", "w") as file:
+            json.dump(game_data, file)
+        print("Game saved successfully.")
+    except Exception as e:
+        print(f"Error saving the game: {e}")
+
+
+
+# Below is the code for the function docstring load_game().
+def load_game():
+    """Loads the game state from a file.
+
+    Parameters:
+        None
+
+    Returns:
+        dict: If game is loaded successfull, returns dict containing game state (user_hp, user_gold, and inventory)
+        None: Returns none if the game cannot be loaded.
+    """
+    try:
+        with open("save.json", "r") as file:
+            game_data = json.load(file)
+        return game_data
+    except FileNotFoundError:
+        print("No saved game found.")
+        return None
+    except Exception as e:
+        print(f"Error loading the game: {e}")
+        return None
 
 
 
@@ -54,7 +106,7 @@ def get_user_choice() -> int:
     while True:
         try:
             choice = int(input("Enter your choice: "))
-            if choice in [1, 2, 3, 4, 5]:
+            if choice in [1, 2, 3, 4, 5, 6]:
                 return choice
             else:
                 print("Invalid choice. Please enter a number between 1 and 5.")
@@ -249,3 +301,4 @@ def equip_item():
 
 if __name__ == "__main__":
     main()
+
