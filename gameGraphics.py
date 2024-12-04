@@ -1,11 +1,11 @@
 # gameGraphics.py
 # Maddie Huettner
-# 11/20/24
+# 12/04/24
 
 """
 This is a third file that corresponds to gamefunctions, the adventure game.
 
-It creates an interactive game.
+It creates an interactive game that takes place on a square grid.
 
 Functions:
 main():
@@ -15,11 +15,11 @@ import sys
 import pygame
 import random
 from gamefunctions import print_shop_menu, purchase_item, new_random_monster
-from game import fight_monster  # Import the fight_monster function from game.py
+from game import fight_monster 
 
 pygame.init()
 
-# Grid and square size instructions.
+# Grid and squares instructions.
 WIDTH, HEIGHT = 320, 320
 GRID_SIZE = 10
 SQUARE_SIZE = 32
@@ -31,20 +31,41 @@ BLACK = (0, 0, 0)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Interactive Game")
 
-# Initial positions.
+# Initial positions instructions.
 player_x, player_y = 0, 0
 player_rect = pygame.Rect(player_x * SQUARE_SIZE, player_y * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
 
-# Inventory and money.
 user_gold = 50
 
 # Font instructions.
 font = pygame.font.SysFont('Arial', 16)
 
-
 shop_visited = False
 
-# Below is the code for function docstring draw_grid.
+# Below is the code for the function docstring load_image.
+def load_image(filename, fallback_color, description):
+    """
+    Loads an image from a file.
+
+    Parameters:
+        filename (str): The path to the image file to load.
+        fallback_color (str): The fallback color to use if the image cannot be loaded (blue or red).
+        description (str): A description of the image being loaded (player or monster).
+
+    Returns:
+        pygame.Surface: The loaded and scaled image, or None if the file is not found or cannot be loaded.
+    """
+    try:
+        image = pygame.image.load(filename).convert_alpha()
+        return pygame.transform.scale(image, (SQUARE_SIZE, SQUARE_SIZE))
+    except Exception as e:
+        print(f"Error: {description} image not found. Defaulting to {fallback_color} square. ({e})")
+        return None
+
+player_image = load_image("person.png", "blue", "Player")
+monster_image = load_image("monster.png", "red", "Monster")
+
+# Below is the code for the function docstring draw_grid.
 def draw_grid():
     """
     Draws a grid of squares on the screen.
@@ -59,13 +80,13 @@ def draw_grid():
         for y in range(0, HEIGHT, SQUARE_SIZE):
             pygame.draw.rect(screen, WHITE, pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
 
-# Below is the code for function docstring display_message.
+# Below is the code for the function docstring display_message.
 def display_message(text):
     """
     Displays a text message on the screen.
 
-    Parameters:
-        text (str): The message that will be displayed.
+     Parameters:
+        text (str): The message to display.
 
     Returns:
         None
@@ -73,15 +94,39 @@ def display_message(text):
     text_surface = font.render(text, True, BLACK)
     screen.blit(text_surface, (10, HEIGHT - 30))
 
-# Below is the code for the Monster class.
 class Monster:
+    # Below is the code for the function docstring __init__(self, x, y).
     def __init__(self, x, y):
+        """
+        Initializes a Monster object with its position and rectangular boundary.
+    
+        Parameters:
+            x (int): The initial x-coordinate of the monster on the grid.
+            y (int): The initial y-coordinate of the monster on the grid.
+    
+        Attributes:
+            x (int): The current x-coordinate of the monster on the grid.
+            y (int): The current y-coordinate of the monster on the grid.
+            rect (pygame.Rect): The rectangle representing the monster's position and size on the screen.
+    
+        Returns:
+            None
+        """
         self.x = x
         self.y = y
         self.rect = pygame.Rect(self.x * SQUARE_SIZE, self.y * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
 
+    # Below is the code for the function docstring move(self).
     def move(self):
-        """Move the monster randomly in one of the four cardinal directions."""
+        """
+        Move the monster randomly in one of the four cardinal directions.
+
+        The movement is restricted within the bounds of the grid, ensuring that the monster 
+        does not move outside of the defined grid area.
+
+        Returns:
+            None
+        """
         direction = random.choice(['up', 'down', 'left', 'right'])
 
         if direction == 'up' and self.y > 0:
@@ -95,10 +140,12 @@ class Monster:
         
         self.rect.topleft = (self.x * SQUARE_SIZE, self.y * SQUARE_SIZE)
 
-# Below is the code for function docstring game_loop.
+    
+# Below is the code for the function docstring game_loop.
 def game_loop():
     """
-    Loop that controls the game.
+    Loop that controls the game. The loop continuously updates the game state 
+    and renders the game screen until the player quits or is defeated.
 
     Parameters:
         None
@@ -109,25 +156,32 @@ def game_loop():
     global player_x, player_y, player_rect, user_gold, shop_visited
     clock = pygame.time.Clock()
 
-
     monsters = [Monster(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))]
-
-
     encountered = False
+
+    # Initialize player stats once at the beginning of the game.
+    user_hp = 100
+    user_power = 10
 
     running = True
     while running:
         screen.fill((0, 0, 0))
         draw_grid()
 
-        
-        pygame.draw.rect(screen, (0, 0, 255), player_rect)
+        # Draw the player using the image or a default blue rectangle
+        if player_image:
+            screen.blit(player_image, player_rect.topleft)
+        else:
+            pygame.draw.rect(screen, (0, 0, 255), player_rect)
 
-        
+        # Draw monsters using the image or a default red rectangle
         for monster in monsters:
-            pygame.draw.rect(screen, (255, 0, 0), monster.rect)
+            if monster_image:
+                screen.blit(monster_image, monster.rect.topleft)
+            else:
+                pygame.draw.rect(screen, (255, 0, 0), monster.rect)
 
-        player_moved = False  
+        player_moved = False
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -152,10 +206,9 @@ def game_loop():
                 elif event.key == pygame.K_q:
                     running = False  
 
-       
         player_rect.topleft = (player_x * SQUARE_SIZE, player_y * SQUARE_SIZE)
 
-        # Code so that monsters only move if the player moves.
+        # Monsters move if the player moves.
         if player_moved:
             for monster in monsters:
                 monster.move()
@@ -165,24 +218,18 @@ def game_loop():
             if player_x == monster.x and player_y == monster.y:
                 if not encountered:  
                     print("Encounter! The monster is here!")
-                    # Offer the player a choice to fight or run
                     choice = input("Do you want to (1) Fight or (2) Run? ").strip()
                     if choice == "1":
-                        # Fight function called  from game.py.
-                        user_hp = 100  
-                        user_power = 10 
                         user_hp = fight_monster(user_hp, user_power)  
                         if user_hp <= 0:
                             print("You have been defeated!")
                             running = False
                         else:
-                            # Clears the defeated monster and spawn two new ones.
                             monsters.remove(monster)  
                             monsters.append(Monster(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1)))
                             monsters.append(Monster(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1)))
                     elif choice == "2":
                         print("You chose to run away!")
-                        
                         encountered = False
                         continue  
                     else:
@@ -196,7 +243,6 @@ def game_loop():
         clock.tick(FPS)
 
     pygame.quit()
-
 
 if __name__ == "__main__":
     game_loop()
